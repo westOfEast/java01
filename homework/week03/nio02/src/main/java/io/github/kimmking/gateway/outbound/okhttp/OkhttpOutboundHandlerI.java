@@ -1,6 +1,8 @@
 package io.github.kimmking.gateway.outbound.okhttp;
 
 import io.github.kimmking.gateway.outbound.IHttpOutboundHandler;
+import io.github.kimmking.gateway.router.HttpEndpointRouter;
+import io.github.kimmking.gateway.router.RandomRouter;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
@@ -24,8 +26,9 @@ public class OkhttpOutboundHandlerI implements IHttpOutboundHandler {
 
     private static final String BACKEND_SERVER = "127.0.0.1:9091";
 
-    private static final HashMap BACKEND_SERVER_MAP = new HashMap();
+    private static final HashMap<String,List<String>> BACKEND_SERVER_MAP = new HashMap();
 
+    private HttpEndpointRouter httpEndpointRouter;
 
     public OkhttpOutboundHandlerI(String url){
         okHttpClient = new okhttp3.OkHttpClient.Builder()
@@ -39,9 +42,10 @@ public class OkhttpOutboundHandlerI implements IHttpOutboundHandler {
                 .retryOnConnectionFailure(true)
                 .connectionPool(new ConnectionPool(10, 5L, TimeUnit.MINUTES))
                 .build();
+        BACKEND_SERVER_MAP.put("/mms",new ArrayList<String>(Arrays.asList("127.0.0.1:9091")));
+        BACKEND_SERVER_MAP.put("/geekbang",new ArrayList<String>(Arrays.asList("u.geekbang.org")));
 
-        BACKEND_SERVER_MAP.put("/mms","127.0.0.1:9091");
-        BACKEND_SERVER_MAP.put("/geekbang","u.geekbang.org");
+        httpEndpointRouter = new RandomRouter();
     }
 
     public okhttp3.Response call(String url, String method, @Nullable RequestBody body,Headers headers){
@@ -90,9 +94,11 @@ public class OkhttpOutboundHandlerI implements IHttpOutboundHandler {
 
     private String getTargetUrl(String uri){
         if(uri.startsWith("/geekbang")){
-            return "http://"+BACKEND_SERVER_MAP.get("/geekbang")+uri.replace("/geekbang","");
+            String endpoint = httpEndpointRouter.route(BACKEND_SERVER_MAP.get("/geekbang"));
+            return "http://"+endpoint+uri.replace("/geekbang","");
         }else if(uri.startsWith("/mms")){
-            return "http://"+BACKEND_SERVER_MAP.get("/mms")+uri;
+            String endpoint = httpEndpointRouter.route(BACKEND_SERVER_MAP.get("/mms"));
+            return "http://"+endpoint+uri;
         }
         return "http://"+BACKEND_SERVER+uri;
     }
