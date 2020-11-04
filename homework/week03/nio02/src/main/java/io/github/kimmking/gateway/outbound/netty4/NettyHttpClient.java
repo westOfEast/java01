@@ -33,12 +33,12 @@ public class NettyHttpClient {
             });
 
             // Start the client.
-            ChannelFuture f = b.connect(host, port).sync();
-
-
-            f.channel().write(request);
-            f.channel().flush();
-            f.channel().closeFuture().sync();
+//            ChannelFuture f = b.connect(host, port).sync();
+//
+//
+//            f.channel().write(request);
+//            f.channel().flush();
+//            f.channel().closeFuture().sync();
         } finally {
             workerGroup.shutdownGracefully();
         }

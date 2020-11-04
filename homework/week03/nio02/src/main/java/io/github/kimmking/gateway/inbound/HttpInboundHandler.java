@@ -1,5 +1,7 @@
 package io.github.kimmking.gateway.inbound;
 
+import io.github.kimmking.gateway.filter.HttpRequestFilter;
+import io.github.kimmking.gateway.filter.HttpRequestHeaderFilter;
 import io.github.kimmking.gateway.outbound.IHttpOutboundHandler;
 import io.github.kimmking.gateway.outbound.okhttp.OkhttpOutboundHandlerI;
 import io.netty.channel.ChannelHandlerContext;
@@ -9,15 +11,20 @@ import io.netty.util.ReferenceCountUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class HttpInboundHandler extends ChannelInboundHandlerAdapter {
 
     private static Logger logger = LoggerFactory.getLogger(HttpInboundHandler.class);
     private final String proxyServer;
     private IHttpOutboundHandler handler;
+    private List<HttpRequestFilter> filterList;
     
     public HttpInboundHandler(String proxyServer) {
         this.proxyServer = proxyServer;
         handler = new OkhttpOutboundHandlerI(this.proxyServer);
+        filterList = new ArrayList<>();
     }
     
     @Override
@@ -28,6 +35,7 @@ public class HttpInboundHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) {
         try {
+            System.out.println("handler is on");
             //logger.info("channelRead流量接口请求开始，时间为{}", startTime);
             FullHttpRequest fullRequest = (FullHttpRequest) msg;
 //            String uri = fullRequest.uri();
@@ -35,7 +43,7 @@ public class HttpInboundHandler extends ChannelInboundHandlerAdapter {
 //            if (uri.contains("/test")) {
 //                handlerTest(fullRequest, ctx);
 //            }
-    
+
             handler.handle(fullRequest, ctx);
     
         } catch(Exception e) {

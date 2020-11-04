@@ -17,6 +17,8 @@ public class NettyServerApplication {
         
           //  http://localhost:8888/api/hello  ==> gateway API
           //  http://localhost:8088/api/hello  ==> backend service
+
+        //测试url：http://localhost:8888/geekbang   http://localhost:8888/mms/project?projectId=1
     
         int port = Integer.parseInt(proxyPort);
         System.out.println(GATEWAY_NAME + " " + GATEWAY_VERSION +" starting...");

@@ -5,17 +5,13 @@ import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.http.*;
-import okhttp3.Call;
-import okhttp3.ConnectionPool;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
+import okhttp3.*;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 import static io.netty.handler.codec.http.HttpResponseStatus.NO_CONTENT;
@@ -48,9 +44,10 @@ public class OkhttpOutboundHandlerI implements IHttpOutboundHandler {
         BACKEND_SERVER_MAP.put("/geekbang","u.geekbang.org");
     }
 
-    public okhttp3.Response getCall(String url){
+    public okhttp3.Response call(String url, String method, @Nullable RequestBody body,Headers headers){
         Request request = new Request.Builder()
-                .get()
+                .method(method,body)
+                .headers(headers)
                 .url(url)
                 .build();
 
@@ -71,20 +68,31 @@ public class OkhttpOutboundHandlerI implements IHttpOutboundHandler {
         try{
             HttpMethod method = fullRequest.method();
             if(StringUtils.compareIgnoreCase(method.name(),"GET") == 0){
-                handleResponse(fullRequest,ctx,getCall(getTargetUrl(fullRequest.uri())));
+                handleResponse(fullRequest,ctx,call(getTargetUrl(fullRequest.uri()),"GET",null,getHeader(fullRequest)));
             }else if(StringUtils.compareIgnoreCase(method.name(),"POST") == 0){
-
+                RequestBody requestBody = RequestBody.create(null, String.valueOf(fullRequest.content()));
+                handleResponse(fullRequest,ctx,call(getTargetUrl(fullRequest.uri()),method.name().toUpperCase(),requestBody,getHeader(fullRequest)));
             }
         }catch(Exception e){
             System.out.println(ExceptionUtils.getStackTrace(e));
         }
     }
 
+    private Headers getHeader(FullHttpRequest fullRequest) {
+        HttpHeaders header = fullRequest.headers();//获取Netty内置的请求头对象
+        List<Map.Entry<String, String>> list = header.entries(); //将包含的请求信息赋值到list中
+        Map<String, String> headerMap = new HashMap<>();
+        Optional.ofNullable(list).orElse(new ArrayList<>()).stream().forEach(stringStringEntry -> {
+            headerMap.put(stringStringEntry.getKey(),stringStringEntry.getValue());
+        });
+        return Headers.of(headerMap);
+    }
+
     private String getTargetUrl(String uri){
         if(uri.startsWith("/geekbang")){
             return "http://"+BACKEND_SERVER_MAP.get("/geekbang")+uri.replace("/geekbang","");
         }else if(uri.startsWith("/mms")){
-            return "http://"+BACKEND_SERVER_MAP.get("/mms")+uri.replace("/mms","");
+            return "http://"+BACKEND_SERVER_MAP.get("/mms")+uri;
         }
         return "http://"+BACKEND_SERVER+uri;
     }
