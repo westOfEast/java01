@@ -4,6 +4,7 @@ import io.github.kimmking.gateway.filter.HttpRequestFilter;
 import io.github.kimmking.gateway.filter.HttpRequestHeaderFilter;
 import io.github.kimmking.gateway.outbound.IHttpOutboundHandler;
 import io.github.kimmking.gateway.outbound.okhttp.OkhttpOutboundHandlerI;
+import io.github.kimmking.gateway.router.RoundRobinRouter;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.codec.http.FullHttpRequest;
@@ -23,7 +24,7 @@ public class HttpInboundHandler extends ChannelInboundHandlerAdapter {
     
     public HttpInboundHandler(String proxyServer) {
         this.proxyServer = proxyServer;
-        handler = new OkhttpOutboundHandlerI(this.proxyServer);
+        handler = new OkhttpOutboundHandlerI(this.proxyServer,new RoundRobinRouter());
         filterList = new ArrayList<>();
     }
     

@@ -3,6 +3,7 @@ package io.github.kimmking.gateway.outbound.okhttp;
 import io.github.kimmking.gateway.outbound.IHttpOutboundHandler;
 import io.github.kimmking.gateway.router.HttpEndpointRouter;
 import io.github.kimmking.gateway.router.RandomRouter;
+import io.github.kimmking.gateway.router.RoundRobinRouter;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
@@ -30,7 +31,7 @@ public class OkhttpOutboundHandlerI implements IHttpOutboundHandler {
 
     private HttpEndpointRouter httpEndpointRouter;
 
-    public OkhttpOutboundHandlerI(String url){
+    public OkhttpOutboundHandlerI(String url,HttpEndpointRouter httpEndpointRouter){
         okHttpClient = new okhttp3.OkHttpClient.Builder()
                 //设置连接超时
                 .connectTimeout(10, TimeUnit.SECONDS)
@@ -45,7 +46,7 @@ public class OkhttpOutboundHandlerI implements IHttpOutboundHandler {
         BACKEND_SERVER_MAP.put("/mms",new ArrayList<String>(Arrays.asList("127.0.0.1:9091")));
         BACKEND_SERVER_MAP.put("/geekbang",new ArrayList<String>(Arrays.asList("u.geekbang.org")));
 
-        httpEndpointRouter = new RandomRouter();
+        this.httpEndpointRouter = httpEndpointRouter;
     }
 
     public okhttp3.Response call(String url, String method, @Nullable RequestBody body,Headers headers){
