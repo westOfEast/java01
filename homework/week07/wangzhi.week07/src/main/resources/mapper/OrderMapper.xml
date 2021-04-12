@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.geekbang.wangzhi.week07.mapper.OrderMapper">
+  <resultMap id="BaseResultMap" type="org.geekbang.wangzhi.week07.model.Order">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="user_id" jdbcType="BIGINT" property="userId" />
+    <result column="goods_id" jdbcType="BIGINT" property="goodsId" />
+    <result column="price" jdbcType="DECIMAL" property="price" />
+    <result column="buy_count" jdbcType="BIGINT" property="buyCount" />
+    <result column="buy_time" jdbcType="TIMESTAMP" property="buyTime" />
+    <result column="modified_by" jdbcType="VARCHAR" property="modifiedBy" />
+    <result column="modified_time" jdbcType="TIMESTAMP" property="modifiedTime" />
+    <result column="created_by" jdbcType="VARCHAR" property="createdBy" />
+    <result column="created_time" jdbcType="TIMESTAMP" property="createdTime" />
+    <result column="delete_flag" jdbcType="SMALLINT" property="deleteFlag" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, user_id, goods_id, price, buy_count, buy_time, modified_by, modified_time, created_by, 
+    created_time, delete_flag
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from t_order
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from t_order
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="org.geekbang.wangzhi.week07.model.Order">
+    insert into t_order (id, user_id, goods_id, 
+      price, buy_count, buy_time, 
+      modified_by, modified_time, created_by, 
+      created_time, delete_flag)
+    values (#{id,jdbcType=BIGINT}, #{userId,jdbcType=BIGINT}, #{goodsId,jdbcType=BIGINT}, 
+      #{price,jdbcType=DECIMAL}, #{buyCount,jdbcType=BIGINT}, #{buyTime,jdbcType=TIMESTAMP}, 
+      #{modifiedBy,jdbcType=VARCHAR}, #{modifiedTime,jdbcType=TIMESTAMP}, #{createdBy,jdbcType=VARCHAR}, 
+      #{createdTime,jdbcType=TIMESTAMP}, #{deleteFlag,jdbcType=SMALLINT})
+  </insert>
+  <insert id="insertSelective" parameterType="org.geekbang.wangzhi.week07.model.Order">
+    insert into t_order
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="userId != null">
+        user_id,
+      </if>
+      <if test="goodsId != null">
+        goods_id,
+      </if>
+      <if test="price != null">
+        price,
+      </if>
+      <if test="buyCount != null">
+        buy_count,
+      </if>
+      <if test="buyTime != null">
+        buy_time,
+      </if>
+      <if test="modifiedBy != null">
+        modified_by,
+      </if>
+      <if test="modifiedTime != null">
+        modified_time,
+      </if>
+      <if test="createdBy != null">
+        created_by,
+      </if>
+      <if test="createdTime != null">
+        created_time,
+      </if>
+      <if test="deleteFlag != null">
+        delete_flag,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="userId != null">
+        #{userId,jdbcType=BIGINT},
+      </if>
+      <if test="goodsId != null">
+        #{goodsId,jdbcType=BIGINT},
+      </if>
+      <if test="price != null">
+        #{price,jdbcType=DECIMAL},
+      </if>
+      <if test="buyCount != null">
+        #{buyCount,jdbcType=BIGINT},
+      </if>
+      <if test="buyTime != null">
+        #{buyTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="modifiedBy != null">
+        #{modifiedBy,jdbcType=VARCHAR},
+      </if>
+      <if test="modifiedTime != null">
+        #{modifiedTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createdBy != null">
+        #{createdBy,jdbcType=VARCHAR},
+      </if>
+      <if test="createdTime != null">
+        #{createdTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="deleteFlag != null">
+        #{deleteFlag,jdbcType=SMALLINT},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="org.geekbang.wangzhi.week07.model.Order">
+    update t_order
+    <set>
+      <if test="userId != null">
+        user_id = #{userId,jdbcType=BIGINT},
+      </if>
+      <if test="goodsId != null">
+        goods_id = #{goodsId,jdbcType=BIGINT},
+      </if>
+      <if test="price != null">
+        price = #{price,jdbcType=DECIMAL},
+      </if>
+      <if test="buyCount != null">
+        buy_count = #{buyCount,jdbcType=BIGINT},
+      </if>
+      <if test="buyTime != null">
+        buy_time = #{buyTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="modifiedBy != null">
+        modified_by = #{modifiedBy,jdbcType=VARCHAR},
+      </if>
+      <if test="modifiedTime != null">
+        modified_time = #{modifiedTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="createdBy != null">
+        created_by = #{createdBy,jdbcType=VARCHAR},
+      </if>
+      <if test="createdTime != null">
+        created_time = #{createdTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="deleteFlag != null">
+        delete_flag = #{deleteFlag,jdbcType=SMALLINT},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="org.geekbang.wangzhi.week07.model.Order">
+    update t_order
+    set user_id = #{userId,jdbcType=BIGINT},
+      goods_id = #{goodsId,jdbcType=BIGINT},
+      price = #{price,jdbcType=DECIMAL},
+      buy_count = #{buyCount,jdbcType=BIGINT},
+      buy_time = #{buyTime,jdbcType=TIMESTAMP},
+      modified_by = #{modifiedBy,jdbcType=VARCHAR},
+      modified_time = #{modifiedTime,jdbcType=TIMESTAMP},
+      created_by = #{createdBy,jdbcType=VARCHAR},
+      created_time = #{createdTime,jdbcType=TIMESTAMP},
+      delete_flag = #{deleteFlag,jdbcType=SMALLINT}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>
